@@ -4,9 +4,12 @@
 SoftwareSerial BT(10, 11);
 
 const byte ROWS = 4, COLS = 4;
-char keys[ROWS][COLS] = {{'1','2','3'},{'4','5','6'},{'7','8','9'},{'*','0','#'}};
-byte rowPins[ROWS] = {2, 8, 4, A3};
-byte colPins[COLS]  = {12, 13, A1,A2};
+char keys[ROWS][COLS] = {
+  {'1','2','3','A'},
+  {'4','5','6','B'},
+  {'7','8','9','C'},
+  {'*','0','#','D'}
+};
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
 const int led1 = 9, led2 = 3, trigPin = 7, echoPin = 6;
