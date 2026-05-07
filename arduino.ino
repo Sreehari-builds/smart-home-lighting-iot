@@ -10,6 +10,8 @@ char keys[ROWS][COLS] = {
   {'7','8','9','C'},
   {'*','0','#','D'}
 };
+byte rowPins[ROWS] = {2, 8, 4, A3};
+byte colPins[COLS]  = {12, 13, A1,A2};
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
 const int led1 = 9, led2 = 3, trigPin = 7, echoPin = 6;
