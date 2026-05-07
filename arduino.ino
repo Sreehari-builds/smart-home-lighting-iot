@@ -4,7 +4,7 @@
 SoftwareSerial BT(10, 11);
 
 const byte ROWS = 4, COLS = 4;
-char keys[ROWS][COLS] = {
+ char keys[ROWS][COLS] = {
   {'1','2','3','A'},
   {'4','5','6','B'},
   {'7','8','9','C'},
@@ -14,12 +14,12 @@ byte rowPins[ROWS] = {2, 8, 4, A3};
 byte colPins[COLS]  = {12, 13, A1,A2};
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
-const int led1 = 9, led2 = 3, trigPin = 7, echoPin = 6;
+const int led1 = 9, led2 = 5, trigPin = 7, echoPin = 6;
 
 bool masterON = false;
 bool led1State = false, led2State = false;
 bool ultrasonicEnabled = false;
-bool motionState = false;         
+bool motionState = false;          // FIX 2: track last motion state
 
 int brightness1 = 128, brightness2 = 128;
 
@@ -38,7 +38,7 @@ void setMode(int mode) {
   BT.print("MODE:"); BT.println(mode);
 }
 
-
+// FIX 1: sync flag — only send BT status when something actually changed
 void syncBT() {
   BT.println(led1State  ? "L1_ON"  : "L1_OFF");
   BT.println(led2State  ? "L2_ON"  : "L2_OFF");
@@ -61,7 +61,7 @@ void updateLEDs() {
     analogWrite(led1, motion && led1State ? brightness1 : 0);
     analogWrite(led2, motion && led2State ? brightness2 : 0);
 
-
+    // FIX 2: only send MOTION message on state CHANGE
     if (motion != motionState) {
       motionState = motion;
       BT.println(motion ? "MOTION_ON" : "MOTION_OFF");
@@ -98,7 +98,7 @@ void handleKeypad() {
   }
 
   updateLEDs();
-  if (changed) syncBT();  
+  if (changed) syncBT();  // only sync when state changed
 }
 
 void handleBluetooth() {
@@ -135,6 +135,6 @@ void setup() {
 void loop() {
   handleKeypad();
   handleBluetooth();
-  if (ultrasonicEnabled && masterON) updateLEDs();  
-  delay(100);  
+  if (ultrasonicEnabled && masterON) updateLEDs();  // FIX 3: only poll ultrasonic when needed
+  delay(100);  // FIX 3: prevent BT flooding
 }
